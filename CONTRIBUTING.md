@@ -22,7 +22,7 @@ npm run build
 
 `npm run lint` runs Biome (formatting plus the recommended rules); `npm run format` rewrites the sources.
 
-Tests use `bun:test`; everything else uses npm scripts. Run them through `npm test`: it passes `--conditions=browser` so Solid resolves the client build and signals stay reactive.
+Tests use `bun:test` and import modules through the package's conditional subpath imports (`#src/...`), declared in `package.json`. Source files keep relative imports because the OpenCode loader imports the server entrypoint at runtime. Run them through `npm test`: it passes `--conditions=browser` so Solid resolves the client build and signals stay reactive.
 
 ## Layout
 

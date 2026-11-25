@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
-import { compactionStatus } from "../../src/meter/compaction"
-import type { RunningCompaction } from "../../src/telemetry/select"
+import { compactionStatus } from "#src/meter/compaction"
+import type { RunningCompaction } from "#src/telemetry/select"
 
 const compaction = (patch: Partial<RunningCompaction> = {}): RunningCompaction =>
   ({

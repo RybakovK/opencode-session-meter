@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { SessionMessageAssistant, SessionMessageInfo } from "@opencode/client/promise"
-import { lastAssistant, runningCompaction, streamingAssistant } from "../../src/telemetry/select"
+import { lastAssistant, runningCompaction, streamingAssistant } from "#src/telemetry/select"
 
 const tokens = { input: 100, output: 10, reasoning: 0, cache: { read: 0, write: 0 } }
 

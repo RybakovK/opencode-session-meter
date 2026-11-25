@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
-import { INITIAL_PREFS, type Prefs } from "../../src/meter/prefs"
-import { buildView, type MeterInput, segmentTone } from "../../src/meter/view"
+import { INITIAL_PREFS, type Prefs } from "#src/meter/prefs"
+import { buildView, type MeterInput, segmentTone } from "#src/meter/view"
 
 const t = (key: string, params?: Record<string, string | number | boolean>) =>
   params ? `${key}(${Object.values(params).join(",")})` : key

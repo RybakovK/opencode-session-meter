@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test"
 import type { MountedSession } from "@opencode/plugin/gui"
 import { createRoot, createSignal } from "solid-js"
-import { createAlerts } from "../../src/meter/alerts"
-import { createMeterModel } from "../../src/meter/meter-model"
-import { INITIAL_PREFS, type Prefs } from "../../src/meter/prefs"
+import { createAlerts } from "#src/meter/alerts"
+import { createMeterModel } from "#src/meter/meter-model"
+import { INITIAL_PREFS, type Prefs } from "#src/meter/prefs"
 
 const tokens = { input: 100, output: 20, reasoning: 0, cache: { read: 800, write: 0 } }
 

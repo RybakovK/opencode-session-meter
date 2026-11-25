@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { createSampler } from "../../src/telemetry/sampler"
+import { createSampler } from "#src/telemetry/sampler"
 
 const clock = (start = 1_000_000) => {
   let current = start

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { createTranscriptPoller, type PollerSnapshot, type TranscriptMessage } from "../../src/telemetry/transport"
+import { createTranscriptPoller, type PollerSnapshot, type TranscriptMessage } from "#src/telemetry/transport"
 
 const deferred = () => {
   let resolve!: (message: TranscriptMessage | undefined) => void

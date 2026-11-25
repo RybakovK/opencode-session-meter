@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
-import { INITIAL_PREFS } from "../../src/meter/prefs"
-import { buildSurface } from "../../src/meter/surface"
-import type { MeterView } from "../../src/meter/view"
+import { INITIAL_PREFS } from "#src/meter/prefs"
+import { buildSurface } from "#src/meter/surface"
+import type { MeterView } from "#src/meter/view"
 
 const t = (key: string) => key
 
