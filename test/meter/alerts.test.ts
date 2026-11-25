@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { type AlertSession, createAlerts } from "../src/meter/alerts"
+import { type AlertSession, createAlerts } from "../../src/meter/alerts"
 
 const session = (id: string): AlertSession => ({ server: "desktop", id })
 

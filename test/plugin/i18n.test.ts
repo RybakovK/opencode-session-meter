@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { i18n } from "../src/plugin/i18n"
+import { i18n } from "../../src/plugin/i18n"
 
 const placeholders = (value: string) => [...value.matchAll(/{{\s*(\w+)\s*}}/g)].map((match) => match[1]).sort()
 

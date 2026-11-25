@@ -1,8 +1,12 @@
 import { describe, expect, test } from "bun:test"
-import type { Sampler } from "../src/telemetry/sampler"
-import { type ControllerState, createSessionController, type SessionProbe } from "../src/telemetry/session-controller"
-import type { StreamSource } from "../src/telemetry/streams"
-import type { TranscriptMessage } from "../src/telemetry/transport"
+import type { Sampler } from "../../src/telemetry/sampler"
+import {
+  type ControllerState,
+  createSessionController,
+  type SessionProbe,
+} from "../../src/telemetry/session-controller"
+import type { StreamSource } from "../../src/telemetry/streams"
+import type { TranscriptMessage } from "../../src/telemetry/transport"
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import type { OpenCodeClient } from "@opencode/client/promise"
 import type { ServerRef } from "@opencode/plugin/gui"
-import { bridgeStream, clientStream } from "../src/telemetry/streams"
+import { bridgeStream, clientStream } from "../../src/telemetry/streams"
 
 type Handler = (event: { data: { sessionID: string; delta: string } }) => void
 

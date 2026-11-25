@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
-import { createDiagnostics } from "../src/meter/diagnostics"
-import type { ControllerState } from "../src/telemetry/session-controller"
+import { createDiagnostics } from "../../src/meter/diagnostics"
+import type { ControllerState } from "../../src/telemetry/session-controller"
 
 const progress = (patch: Partial<ControllerState> = {}): ControllerState => ({
   counters: { bridge: 0, client: 0, store: 0, http: 0 },

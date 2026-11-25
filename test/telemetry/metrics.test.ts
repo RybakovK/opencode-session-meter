@@ -11,7 +11,7 @@ import {
   sparkline,
   stepRate,
   streamRate,
-} from "../src/telemetry/metrics"
+} from "../../src/telemetry/metrics"
 
 const tokens = (input: number, output: number, reasoning: number, read: number, write: number) => ({
   input,
