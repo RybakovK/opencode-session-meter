@@ -1,7 +1,6 @@
 {
   "name": "opencode-session-meter",
   "version": "0.1.0",
-  "private": true,
   "license": "MIT",
   "type": "module",
   "description": "Generation speed, context usage and prompt cache hit rate in the OpenCode Desktop session header",
@@ -53,5 +52,8 @@
   "homepage": "https://github.com/RybakovK/opencode-session-meter#readme",
   "bugs": {
     "url": "https://github.com/RybakovK/opencode-session-meter/issues"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }
