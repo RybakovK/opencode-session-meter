@@ -1,0 +1,135 @@
+[English](README.md) · **Русский**
+
+[![ci](https://github.com/RybakovK/opencode-session-meter/actions/workflows/ci.yml/badge.svg)](https://github.com/RybakovK/opencode-session-meter/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+# opencode-session-meter
+
+Скорость генерации, использование контекста и попадание в кэш промпта в заголовке панели сессии OpenCode Desktop.
+
+```
+12 ток/с  ·  86.2k / 200k  ·  кэш 87%
+```
+
+## Возможности
+
+- **Скорость** — токены в секунду, пока модель пишет. Сервер не публикует потоковый расход токенов, поэтому плагин считает символы и калибрует «символов на токен» по последнему завершённому шагу. Источника четыре, но считается только один: bridge событий плагина, клиентский поток событий того же сервера (побеждает первый ответивший), стор окна и опрос HTTP‑транскрипта раз в секунду как последний резерв. Пока шаг стримится и данных ещё нет, в заголовке `сбор…`.
+- **Контекст** — токены последнего запроса (`input + output + reasoning + cache.read + cache.write`, тот же итог, что в сайдбаре TUI) относительно окна модели. С 75% окна число становится жёлтым, с 90% — красным и с меткой ⚠.
+- **Кэш** — доля токенов промпта (`input + cache.read + cache.write`), прочитанных из кэша провайдера. Ниже 40% при промпте больше 2k токенов число желтеет, а тултип объясняет, что префикс промпта, вероятно, изменился.
+- **Спарклайн** — график скорости за последние 30 секунд, блок = секунда, едет в реальном времени. В простое остаётся ровная зелёная линия; через три секунды без новых данных живая скорость сменяется средней за шаг.
+- **Компакт** — пока сессия сжимается, заголовок заменяет метрики на `▁▃▅ компакт 12с`. В событиях компакта нет общего объёма, поэтому показываем время, а не выдуманный процент; в тултипе — объём описания и признак «авто/вручную».
+- **Уведомления** — один toast на порог и сессию, плюс системное уведомление, когда приложение в фоне, на 75% и 90%.
+
+Наведите на строку — откроется компактный тултип, по строке на метрику. Когда ответ уже завершён, строка скорости показывает среднюю за шаг и подписывает это.
+
+Тексты следуют языку приложения: русский и английский, для остальных языков — английский.
+
+## Как это выглядит
+
+Обычная сессия:
+
+```
+12 ток/с  ·  86.2k / 200k  ·  кэш 87%
+```
+
+Предупреждение и критика — 75% и 90% окна модели:
+
+```
+12 ток/с  ·  152k / 200k  ·  кэш 61%
+⚠ 190k / 200k  ·  кэш 40%
+```
+
+Во время сжатия и до первых дельт:
+
+```
+▅ компакт 12с
+сбор…
+```
+
+Тултип, русский интерфейс:
+
+```
+Скорость              42 ток/с
+Контекст     86.2k / 200k · 43%
+Кэш       87% · чтение 74k · запись 1.2k
+──────────────────────────────────────
+Скорость, 30 с  ▁▂▃▅█▆▃▂▁▁▂▃▅▆▇█▆▅▃▂▁▁▂▃▅▆▇█▆▅▃
+```
+
+Когда ответ завершён, строка скорости читается как `42 ток/с · средняя за шаг`, а пустой график остаётся ровной зелёной линией.
+
+## Установка
+
+Нужен OpenCode Desktop с GUI‑плагинами (2.2 и новее).
+
+```bash
+git clone https://github.com/RybakovK/opencode-session-meter.git ~/plugins/opencode-session-meter
+```
+
+Добавьте каталог в список плагинов глобального `opencode.json` (или `opencode.jsonc`):
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugins": ["~/plugins/opencode-session-meter"]
+}
+```
+
+OpenCode перезагружает плагины при изменении конфига, перезапуск не нужен. Собранный GUI‑бандл лежит в репозитории, поэтому клон работает без сборки.
+
+## Настройки и команды
+
+- `Настройки → Индикатор сессии` — включить или выключить весь индикатор, отдельные метрики и уведомления.
+- Палитра команд — **Переключить индикатор сессии** и **Сжать контекст сессии сейчас**.
+
+Пороги и цветовая подсказка настраиваются в записи плагина:
+
+```jsonc
+{
+  "plugins": [
+    {
+      "package": "~/plugins/opencode-session-meter",
+      "options": { "warnPercent": 70, "dangerPercent": 85 }
+    }
+  ]
+}
+```
+
+## Архитектура
+
+Окно — только проводка; поведение живёт за маленькими интерфейсами, каждый покрыт тестами:
+
+| module                                      | interface                                                                                             |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `src/telemetry/sampler.ts`                  | `createSampler({ onChange, now })` → `delta`, `total`, `calibrate`, `tick`, `state`, `ratio`, `reset` |
+| `src/meter/view.ts`                         | `buildView(input, prefs, t)` → сегменты заголовка, строки тултипа, текст для aria                     |
+| `src/meter/alerts.ts`                       | `createAlerts({ thresholds, deliver })` → `observe`, `reset`                                          |
+| `src/meter/compaction.ts`                   | `compactionStatus(message, now, ratio)`                                                               |
+| `src/telemetry/select.ts`                   | `lastAssistant`, `streamingAssistant`, `runningCompaction` по списку сообщений                        |
+| `src/telemetry/transport.ts`                | `createTranscriptPoller({ source, onLength, onState })` → `poll`, `stop`                              |
+| `src/telemetry/session-controller.ts`       | `createSessionController({ sampler, probe, bridge, client, source })` → `start`, `stop`               |
+| `src/meter/meter-model.ts`                  | `createMeterModel({ session, prefs, alerts })` → `view`, `status`, `label`, `start`, `stop`           |
+| `src/telemetry/streams.ts`                  | `bridgeStream(data, sessionID)`, `clientStream(client, sessionID)` → `StreamSource`                   |
+| `src/meter/surface.ts`                      | `buildSurface({ view, status, prefs, t })` → `hidden`, `collecting`, `metrics`, `compaction`          |
+| `src/meter/diagnostics.ts`                  | `createDiagnostics({ now })` → `observe`, `hint`                                                      |
+| `src/meter/prefs.ts`, `src/meter/gauges.ts` | один список метрик кормит prefs, настройки и заголовок                                                |
+| `src/plugin/i18n.ts`                        | исходные тексты на английском и русский перевод; английский — фолбэк                                  |
+
+`src/telemetry/metrics.ts` — чистая математика по токенам. `src/plugin/id.ts` — id плагина, который импортируют оба entry.
+
+## Разработка
+
+```bash
+npm install
+npm run dev        # пересборка при изменениях; OpenCode сам перезагружает GUI
+npm run lint
+npm run typecheck
+npm test
+npm run build      # пишет dist/gui-experimental.cjs
+```
+
+`dist/gui-experimental.cjs` коммитится, потому что OpenCode загружает его напрямую. CI прогоняет те же проверки и падает, если закоммиченный бандл устарел, — перед коммитом изменений в исходниках запускайте `npm run build`.
+
+## Лицензия
+
+[MIT](LICENSE)
