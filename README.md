@@ -60,7 +60,7 @@ When the answer has finished, the speed row reads `42 tok/s · step average`, an
 
 ## Install
 
-Requires OpenCode Desktop with the GUI plugin API (2.2 or newer).
+Requires OpenCode Desktop 2.3 or newer. The plugin is built and tested against the 2.3 GUI plugin API; older 2.2 builds may work but are untested.
 
 ```bash
 git clone https://github.com/RybakovK/opencode-session-meter.git ~/plugins/opencode-session-meter
@@ -76,6 +76,13 @@ Add the directory to the plugin list in your global `opencode.json` (or `opencod
 ```
 
 OpenCode reloads plugins on config changes, so no restart is needed. The built GUI bundle is committed, so a clone works without a build step.
+
+## Limitations
+
+- Speed is an estimate: the server does not publish streamed token usage, so the plugin counts streamed characters and calibrates characters per token from the last finished step. Treat it as a rate, not a billing number.
+- Built on the experimental GUI plugin API. An OpenCode upgrade may change `server.data`, `Slot` or the event names.
+- The header JSX has no render test. Pure modules and the model are covered; a rendering failure degrades to the ErrorBoundary fallback.
+- `dist/gui-experimental.cjs` is committed so a clone works without a build step.
 
 ## Settings and commands
 
