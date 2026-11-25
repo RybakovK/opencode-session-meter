@@ -13,7 +13,8 @@
     "desktop"
   ],
   "exports": {
-    ".": "./src/plugin/index.ts",
+    ".": "./src/index.ts",
+    "./server": "./src/index.ts",
     "./gui-experimental": "./dist/gui-experimental.cjs"
   },
   "files": [
